@@ -1,9 +1,14 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   DoCheck,
   OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
 } from '@angular/core';
+import { HeaderComponent } from '../header/header.component';
 import { Room, RoomList } from './rooms';
 
 @Component({
@@ -12,10 +17,21 @@ import { Room, RoomList } from './rooms';
   styleUrls: ['./rooms.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RoomsComponent implements OnInit, DoCheck {
+export class RoomsComponent implements OnInit, DoCheck, AfterViewInit {
+  @ViewChild(HeaderComponent) headerComponent!: HeaderComponent;
+
+  @ViewChildren(HeaderComponent)
+  headerChildrenComponent!: QueryList<HeaderComponent>;
+
+  ngAfterViewInit(): void {
+    this.headerComponent.title = 'Rooms View';
+    console.log(this.headerChildrenComponent);
+  }
+
   ngDoCheck(): void {
     console.log('calling ngDoCheck');
   }
+
   hotelName = 'Taj Hotel';
   numberOfRooms = 100;
 
@@ -34,6 +50,7 @@ export class RoomsComponent implements OnInit, DoCheck {
   selectedRooms!: RoomList;
 
   ngOnInit(): void {
+    // console.log(this.headerComponent);
     this.roomsList = [
       {
         roomType: 'Deluxe Room',
