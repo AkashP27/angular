@@ -4,29 +4,18 @@
   <div [innerText]="numberOfRooms"></div>
 </div>
 
-<div *ngIf="rooms.availableRooms > 5">
-  Rooms List
-  <!-- {{ roomsList }} -->
-  <table>
-    <tr>
-      <th>roomType</th>
-      <th>amenities</th>
-      <th>price</th>
-      <th>checkinTime</th>
-      <th>checkoutTime</th>
-    </tr>
-    <tr
-      [ngClass]="e ? 'even' : 'odd'"
-      *ngFor="let room of roomsList; let e = even; let o = odd"
-    >
-      <td>{{ e ? "Even" : "Odd" }}</td>
-      <td>{{ room.roomType }}</td>
-      <td>{{ room.amenities }}</td>
-      <td>{{ room.price }}</td>
-      <td>{{ room.checkinTime }}</td>
-      <td>{{ room.checkoutTime }}</td>
-    </tr>
-  </table>
+<div *ngIf="selectedRooms">
+  {{ selectedRooms | json }}
+</div>
+
+<button (click)="addRoom()">add Room</button>
+
+<div *ngIf="rooms.availableRooms > 0">
+  <prac-rooms-list
+    [rooms]="roomsList"
+    [title]="title"
+    (selectedRooms)="selectsRoom($event)"
+  ></prac-rooms-list>
 </div>
 
 <button (click)="toggle()">Button</button>
