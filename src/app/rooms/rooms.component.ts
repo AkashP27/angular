@@ -1,3 +1,4 @@
+import { ThisReceiver } from '@angular/compiler';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -8,8 +9,10 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
+import { Observable } from 'rxjs';
 import { HeaderComponent } from '../header/header.component';
 import { Room, RoomList } from './rooms';
+import { RoomsService } from './services/rooms.service';
 
 @Component({
   selector: 'prac-rooms',
@@ -22,15 +25,6 @@ export class RoomsComponent implements OnInit, DoCheck, AfterViewInit {
 
   @ViewChildren(HeaderComponent)
   headerChildrenComponent!: QueryList<HeaderComponent>;
-
-  ngAfterViewInit(): void {
-    this.headerComponent.title = 'Rooms View';
-    console.log(this.headerChildrenComponent);
-  }
-
-  ngDoCheck(): void {
-    console.log('calling ngDoCheck');
-  }
 
   hotelName = 'Taj Hotel';
   numberOfRooms = 100;
@@ -49,44 +43,80 @@ export class RoomsComponent implements OnInit, DoCheck, AfterViewInit {
 
   selectedRooms!: RoomList;
 
+  stream = new Observable((observer) => {
+    observer.next('user1');
+    observer.next('user2');
+    observer.next('user3');
+    observer.complete();
+    // observer.error('error');
+  });
+
+  constructor(private roomsService: RoomsService) {}
+
   ngOnInit(): void {
     // console.log(this.headerComponent);
-    this.roomsList = [
-      {
-        roomType: 'Deluxe Room',
-        amenities: 'AC, WIFI, TV',
-        price: 10000,
-        checkinTime: new Date(),
-        checkoutTime: new Date(),
-      },
-      {
-        roomType: ' Semi Deluxe Room',
-        amenities: 'AC, WIFI',
-        price: 5000,
-        checkinTime: new Date(),
-        checkoutTime: new Date(),
-      },
-      {
-        roomType: 'Normal Room',
-        amenities: 'WIFI',
-        price: 1000,
-        checkinTime: new Date(),
-        checkoutTime: new Date(),
-      },
-    ];
+  }
+
+  ngAfterViewInit(): void {
+    // this.stream.subscribe((data) => {
+    //   console.log(data);
+    // });
+    this.stream.subscribe({
+      next: (value) => console.log(value),
+      complete: () => console.log('complete'),
+      error: (err) => console.log(err),
+    });
+    this.roomsService.getRooms().subscribe((rooms) => {
+      this.roomsList = rooms;
+    });
+    this.headerComponent.title = 'Rooms View';
+    console.log(this.headerChildrenComponent);
+  }
+
+  ngDoCheck(): void {
+    console.log('calling ngDoCheck');
   }
 
   addRoom() {
     const room: RoomList = {
+      // roomNumber: '100',
       roomType: 'Semi Private',
       amenities: 'AC',
       price: 400,
+      photos: 'fake photo',
       checkinTime: new Date(),
       checkoutTime: new Date(),
+      rating: 3.2,
     };
 
     // this.roomsList.push(room);
-    this.roomsList = [...this.roomsList, room];
+    // this.roomsList = [...this.roomsList, room];
+    this.roomsService.addRoom(room).subscribe((data) => {
+      this.roomsList = data;
+    });
+  }
+
+  editRoom() {
+    const room: RoomList = {
+      roomNumber: '1',
+      roomType: 'Semi Private',
+      amenities: 'AC',
+      price: 400,
+      photos: 'fake photo',
+      checkinTime: new Date(),
+      checkoutTime: new Date(),
+      rating: 3.2,
+    };
+
+    this.roomsService.editRoom(room).subscribe((data) => {
+      this.roomsList = data;
+    });
+  }
+
+  deleteRoom() {
+    this.roomsService.deleteRoom('1').subscribe((data) => {
+      this.roomsList = data;
+    });
   }
 
   toggle() {
