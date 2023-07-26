@@ -3,6 +3,7 @@
 <prac-header></prac-header>
 <prac-header></prac-header>
 <prac-header></prac-header>
+<!-- {{ rooms$ | async | json }} -->
 <div [hidden]="hideRooms">
   <p>No. of rooms available</p>
   <div [innerText]="numberOfRooms"></div>
@@ -14,9 +15,9 @@
 
 <button (click)="addRoom()">add Room</button>
 
-<div *ngIf="rooms.availableRooms > 0">
+<div *ngIf="rooms$ | async as rooms">
   <prac-rooms-list
-    [rooms]="roomsList"
+    [rooms]="rooms"
     [title]="title"
     (selectedRooms)="selectsRoom($event)"
   ></prac-rooms-list>

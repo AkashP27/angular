@@ -1,6 +1,6 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { RoomsComponent } from './rooms/rooms.component';
@@ -10,6 +10,13 @@ import { HeaderComponent } from './header/header.component';
 import { ContainerComponent } from './container/container.component';
 import { EmployeeComponent } from './employee/employee.component';
 import { APP_CONFIG, APP_SERVICE_CONFIG } from '../AppConfig/appconfig.service';
+import { RequestInterceptor } from './request.interceptor';
+import { InitService } from './init.service';
+
+// APP_INITIALIZER
+function initFactory(initService: InitService) {
+  return () => initService.init();
+}
 
 @NgModule({
   declarations: [
@@ -31,7 +38,19 @@ import { APP_CONFIG, APP_SERVICE_CONFIG } from '../AppConfig/appconfig.service';
       provide: APP_SERVICE_CONFIG,
       useValue: APP_CONFIG,
     },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: RequestInterceptor,
+      multi: true,
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initFactory,
+      deps: [InitService], // dependencies
+      multi: true,
+    },
   ],
+
   bootstrap: [AppComponent],
 })
 export class AppModule {}

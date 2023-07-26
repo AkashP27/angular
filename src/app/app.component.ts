@@ -6,6 +6,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
+import { InitService } from './init.service';
 import { RoomsComponent } from './rooms/rooms.component';
 
 @Component({
@@ -27,4 +28,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
   title = 'practice-app';
   role = 'Admin';
+
+  constructor(private initService: InitService) {
+    console.log(this.initService.config);
+  }
 }

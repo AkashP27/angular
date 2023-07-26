@@ -1,5 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpRequest } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
+import { shareReplay } from 'rxjs';
 import { AppConfig } from '../../../AppConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from '../../../AppConfig/appconfig.service';
 import { environment } from '../../../environments/environment';
@@ -33,6 +34,8 @@ export class RoomsService {
     // },
   ];
 
+  getRooms$ = this.http.get<RoomList[]>('/api/rooms').pipe(shareReplay(1));
+
   constructor(
     @Inject(APP_SERVICE_CONFIG) private config: AppConfig,
     private http: HttpClient
@@ -55,5 +58,17 @@ export class RoomsService {
 
   deleteRoom(id: string) {
     return this.http.delete<RoomList[]>(`api/rooms/${id}`);
+  }
+
+  getPhotos() {
+    const req = new HttpRequest(
+      'GET',
+      `https://jsonplaceholder.typicode.com/photos`,
+      {
+        reportProgress: true,
+      }
+    );
+
+    return this.http.request(req);
   }
 }

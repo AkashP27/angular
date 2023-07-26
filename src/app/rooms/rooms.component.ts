@@ -1,15 +1,15 @@
-import { ThisReceiver } from '@angular/compiler';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   DoCheck,
+  OnDestroy,
   OnInit,
   QueryList,
   ViewChild,
   ViewChildren,
 } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { HeaderComponent } from '../header/header.component';
 import { Room, RoomList } from './rooms';
 import { RoomsService } from './services/rooms.service';
@@ -20,7 +20,9 @@ import { RoomsService } from './services/rooms.service';
   styleUrls: ['./rooms.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RoomsComponent implements OnInit, DoCheck, AfterViewInit {
+export class RoomsComponent
+  implements OnInit, DoCheck, AfterViewInit, OnDestroy
+{
   @ViewChild(HeaderComponent) headerComponent!: HeaderComponent;
 
   @ViewChildren(HeaderComponent)
@@ -31,7 +33,7 @@ export class RoomsComponent implements OnInit, DoCheck, AfterViewInit {
 
   title = 'Room Lists';
 
-  hideRooms = false;
+  hideRooms = true;
 
   rooms: Room = {
     totalRooms: 100,
@@ -53,11 +55,19 @@ export class RoomsComponent implements OnInit, DoCheck, AfterViewInit {
 
   constructor(private roomsService: RoomsService) {}
 
+  subscription!: Subscription;
+
+  rooms$ = this.roomsService.getRooms$;
+
   ngOnInit(): void {
     // console.log(this.headerComponent);
   }
 
   ngAfterViewInit(): void {
+    this.roomsService.getPhotos().subscribe((data) => {
+      console.log(data);
+    });
+
     // this.stream.subscribe((data) => {
     //   console.log(data);
     // });
@@ -66,9 +76,9 @@ export class RoomsComponent implements OnInit, DoCheck, AfterViewInit {
       complete: () => console.log('complete'),
       error: (err) => console.log(err),
     });
-    this.roomsService.getRooms().subscribe((rooms) => {
-      this.roomsList = rooms;
-    });
+    // this.subscription = this.roomsService.getRooms$.subscribe((rooms) => {
+    //   this.roomsList = rooms;
+    // });
     this.headerComponent.title = 'Rooms View';
     console.log(this.headerChildrenComponent);
   }
@@ -126,5 +136,9 @@ export class RoomsComponent implements OnInit, DoCheck, AfterViewInit {
 
   selectsRoom(room: RoomList) {
     this.selectedRooms = room;
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) this.subscription.unsubscribe();
   }
 }
