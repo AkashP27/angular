@@ -19,7 +19,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   // @ViewChild('user', { read: ViewContainerRef }) vcr!: ViewContainerRef;
 
   ngOnInit(): void {
-    this.name.nativeElement.innerText = 'Milton Hotel';
+    // this.name.nativeElement.innerText = 'Milton Hotel';
   }
 
   ngAfterViewInit(): void {
