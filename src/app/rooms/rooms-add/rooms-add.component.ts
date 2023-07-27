@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { RoomList } from '../rooms';
 import { RoomsService } from '../services/rooms.service';
 
@@ -22,9 +23,19 @@ export class RoomsAddComponent {
     rating: 0,
   };
 
-  AddRoom() {
+  AddRoom(roomsForm: NgForm) {
     this.roomsService.addRoom(this.room).subscribe((data) => {
       this.successMessage = 'Room added successfully';
+      // roomsForm.reset();
+      roomsForm.resetForm({
+        roomType: '',
+        amenities: '',
+        price: 0,
+        photos: '',
+        checkinTime: new Date(),
+        checkoutTime: new Date(),
+        rating: 0,
+      });
     });
   }
 }
