@@ -21,7 +21,7 @@ const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   {
     path: 'booking',
-    canActivate: [loginGuard],
+    // canActivate: [loginGuard],
     loadChildren: () =>
       import('./booking/booking.module').then((m) => m.BookingModule),
   },
